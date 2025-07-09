@@ -115,10 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
             this.y += this.vy;
         }
     }
-    
-    canvas.addEventListener('click', (event) => {
-        arrows.push(new Arrow(event.clientX, event.clientY));
-    });
+
+    // Función para manejar clicks y toques
+    function handlePointer(event) {
+        event.preventDefault(); // Evita scroll/zoom en móvil al tocar canvas
+        let x, y;
+
+        if (event.touches && event.touches.length > 0) {
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
+        } else {
+            x = event.clientX;
+            y = event.clientY;
+        }
+
+        arrows.push(new Arrow(x, y));
+    }
+
+    document.addEventListener('pointerdown', handlePointer, { passive: false });
 
     function animate() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
@@ -140,9 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function init() {
         particles = [];
-        const scale = 18;
+        const isMobile = window.innerWidth <= 600;
+        const scale = isMobile ? 12 : 18;
         const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2.5;
+        const centerY = isMobile ? canvas.height / 2.8 : canvas.height / 2.5;
+    
         const heartPath = new Path2D();
         for (let t = 0; t < Math.PI * 2; t += 0.01) {
             let x = centerX + scale * (16 * Math.pow(Math.sin(t), 3));
@@ -151,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else heartPath.lineTo(x, y);
         }
         heartPath.closePath();
+    
         let createdParticles = 0;
         while (createdParticles < particleCount) {
             const boxX = centerX + (Math.random() - 0.5) * (scale * 35);
@@ -167,22 +184,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     init();
     animate();
+
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         init();
     });
 
+    gsap.registerPlugin(TextPlugin);
+
     const message = "Como ves, mi corazón no resiste cuando se trata de ti. ❤️<br>Me Gustas Nicole";
     const messageEl = document.getElementById('love-message');
+    console.log('Elemento love-message:', messageEl); // Para debug
     
-    gsap.to(messageEl, {
-        duration: message.length * 0.12,
-        text: {
-            value: message,
-            delimiter: "", // opcional: anima letra por letra
-        },
-        ease: "none",
-        delay: 3
-    });
+    if (messageEl) {
+        gsap.to(messageEl, {
+            duration: message.length * 0.12,
+            text: {
+                value: message,
+                delimiter: "",
+                innerHTML: true
+            },
+            ease: "none",
+            delay: 2
+        });
+    } else {
+        console.warn("No se encontró el elemento love-message");
+    }
+    
 });
