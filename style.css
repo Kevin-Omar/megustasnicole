@@ -10,13 +10,16 @@ body, html {
 }
 
 #particle-heart {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10; /* más alto que otros elementos */
+    pointer-events: auto; /* asegúrate de que reciba eventos */
+    touch-action: auto; /* o prueba 'manipulation' */
 }
+
 
 #instructions {
     position: absolute;
@@ -37,15 +40,16 @@ body, html {
 }
 
 .message-container {
+    position: relative; /* ya tienes */
+    z-index: 20; /* sube por encima del canvas */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-    position: relative;
-    z-index: 2;
     text-align: center;
-    margin-top: 400px; 
+    margin-top: 400px;
 }
+
 
 #love-message {
     color: #fff;
@@ -54,4 +58,21 @@ body, html {
     letter-spacing: 2px;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
     margin-bottom: 300px;
+}
+
+/* Media queries para móvil */
+@media (max-width: 600px) {
+    #instructions {
+        font-size: 0.8rem;
+        top: 10px;
+    }
+
+    .message-container {
+        margin-top: 150px; /* Menor espacio arriba para que no baje tanto */
+    }
+
+    #love-message {
+        font-size: 1.5rem; /* Texto más pequeño en móvil */
+        margin-bottom: 100px; /* Menor espacio abajo */
+    }
 }
